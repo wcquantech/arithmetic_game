@@ -3,9 +3,10 @@
     padding: 0;
     box-sizing: border-box;
     background: rgb(242, 242, 242);
+    color: #585858
 }
 body {
-    font-family: Arial, sans-serif;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     text-align: center;
     display: flex;
     justify-content: center;
@@ -31,6 +32,20 @@ nav {
     justify-content: space-evenly;
     margin-bottom: 30px;
 }
+.levels h3 {
+    cursor: pointer;
+    transition: all 0.4s;
+}
+.levels h3:hover {
+    color:#2dbdd6;
+}
+.active-level {
+    border-bottom: 2px #2dbdd6 solid;
+    color:#2dbdd6;
+}
+.active-level:hover {
+    cursor: default;
+}
 #game {
     margin-top: 200px;
     flex-basis: 70%;
@@ -55,10 +70,19 @@ nav {
     width: 60px;
     height: 60px;
     line-height: 60px;
-    border: 1px solid #000;
-    border-radius: 50%;
+    border: 1px solid #585858;
+    border-radius: 10%;
     margin: 10px;
     cursor: move;
+    transition: all 0.4s;
+}
+.number:hover {
+    opacity: 0.5;
+}
+.dragged {
+    opacity: 0.2;
+    cursor: default;
+    background: transparent;
 }
 .drop-zone {
     display: inline-block;
@@ -68,6 +92,18 @@ nav {
     border: 1px dashed #000;
     border-radius: 10%;
     margin: 5px;
+    transition: all 0.4s;
+}
+.drop-zone.drop-hover {
+    transform: scale(1.1);
+}
+.filled {
+    background: #2dbdd6;
+    color: #fff;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    border-radius: 10%;
 }
 #operator-2 {
     display: none;
