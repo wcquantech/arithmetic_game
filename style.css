@@ -14,13 +14,14 @@ body {
 nav {
     width: 100%;
     position: fixed;
-    top: 5px;
+    top: 0;
     z-index: 10;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    margin: 20px 0;
+    padding-top: 20px;
+    margin-bottom: 20px;
     border-bottom: 2px solid #c4c4c4;
 }
 .intro {
@@ -48,7 +49,8 @@ nav {
 }
 #game {
     margin-top: 200px;
-    flex-basis: 70%;
+    flex-basis: 50%;
+    /* display: none; */
 }
 .equation {
     font-size: 24px;
@@ -78,6 +80,7 @@ nav {
 }
 .number:hover {
     opacity: 0.5;
+    transform: scale(1.1);
 }
 .dragged {
     opacity: 0.2;
@@ -111,9 +114,9 @@ nav {
 #drop-zone-3 {
     display: none;
 }
-#submit {
+.btn {
     display: inline;
-    margin: 20px auto;
+    margin: 20px 10px;
     padding: 10px 20px;
     font-size: 18px;
     cursor: pointer;
@@ -123,11 +126,16 @@ nav {
     color: #fff;
     transition: all 0.4s;
 }
-#submit:hover {
+.btn:hover {
     background: #6cd5e8;
 }
-#submit:active {
+.btn:active {
     transform: scale(0.7);
+}
+.material-icons {
+    background: transparent;
+    color: #fff;
+    font-size: smaller;
 }
 .scoreboard {
     display: flex;
@@ -136,4 +144,9 @@ nav {
 .scoreboard p {
     margin: 0 20px;
     font-size: medium;
+}
+#home {
+    margin-top: 300px;
+    width: 100%;
+    display: none;
 }
