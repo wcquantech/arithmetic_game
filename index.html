@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="style.css">
+    <script src="./main.js" defer></script>
     <title>Arithmetic Game</title>
 </head>
 <body>
@@ -34,33 +35,36 @@
         <div id="numbers">
             <!-- Draggable Numbers -->
             <div>
-                <span class="number" draggable="true">0</span>
-                <span class="number" draggable="true">1</span>
-                <span class="number" draggable="true">2</span>
-                <span class="number" draggable="true">3</span>
-                <span class="number" draggable="true">4</span>
+                <span class="number" id="number-0" draggable="true">0</span>
+                <span class="number" id="number-1" draggable="true">1</span>
+                <span class="number" id="number-2" draggable="true">2</span>
+                <span class="number" id="number-3" draggable="true">3</span>
+                <span class="number" id="number-4" draggable="true">4</span>
             </div>
             <div>
-                <span class="number" draggable="true">5</span>
-                <span class="number" draggable="true">6</span>
-                <span class="number" draggable="true">7</span>
-                <span class="number" draggable="true">8</span>
-                <span class="number" draggable="true">9</span>
+                <span class="number" id="number-5" draggable="true">5</span>
+                <span class="number" id="number-6" draggable="true">6</span>
+                <span class="number" id="number-7" draggable="true">7</span>
+                <span class="number" id="number-8" draggable="true">8</span>
+                <span class="number" id="number-9" draggable="true">9</span>
             </div>
         </div>
 
         <div class="asso">
-            <button id="pauseAndPlay" class="btn"><span class="material-icons">pause</span></button>
-            <button id="submit" class="btn">Submit</button>
+            <button id="pause" class="btn"><span class="material-icons">pause</span></button>
+            <button id="submit" class="btn" disabled>Submit</button>
         </div>
 
         <div class="scoreboard">
-            <p>Time Remaining:  <span id="time">60</span>s</p>
-            <p>Score: <span id="score">0</span></p>
+            <p>Time Remaining:  <span id="time"></span>s</p>
+            <p>Score: <span id="live-score">0</span></p>
             <p>Previous High Score: <span id="previous-score">0</span></p>
         </div>
     </div>
     <div id="home">
+        <div class="score-display">
+            <h1>Your Score: <span id="final-score">24</span></h1>
+        </div>
         <button id="start" class="btn">Start New</button>
         <button id="resume" class="btn">Resume</button>
     </div>
