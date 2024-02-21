@@ -82,6 +82,10 @@ nav {
     opacity: 0.5;
     transform: scale(1.1);
 }
+.number.dragged:hover {
+    opacity: 0.2;
+    transform: initial;
+}
 .dragged {
     opacity: 0.2;
     cursor: default;
@@ -102,6 +106,14 @@ nav {
 }
 .filled {
     background: #2dbdd6;
+    color: #fff;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    border-radius: 10%;
+}
+.wrong {
+    background: #d62d2d;
     color: #fff;
     width: 60px;
     height: 60px;

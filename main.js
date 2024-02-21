@@ -22,9 +22,11 @@ for (let i = 1; i < 4; i++) {
 
 // Get the number buttons
 const numberBtns = [];
+const numberBtnHandlers = [];
 for (let i = 0; i < 10; i++) {
     numberBtns.push(document.getElementById(`number-${i}`));
-    numberBtns[i].addEventListener("click", (event) => clickNumber(event, i));
+    numberBtnHandlers.push(() => clickNumber(i));
+    numberBtns[i].addEventListener("click", numberBtnHandlers[i]);
 }
 
 
@@ -98,5 +100,29 @@ resumeBtn.onclick = (event) => {
 
 
 // Handle number clicking events
-function clickNumber(event, num) {
+function clickNumber(num) {
+    console.log(`Clicked ${num}`);
+    if (level === 1) {
+        if (dropZones[0].textContent == "") { 
+            dropZones[0].textContent = num;
+            // Disable button
+            numberBtns[num].classList.add("dragged");
+            numberBtns[num]['draggable'] = false;
+            numberBtns[num].removeEventListener("click", numberBtnHandlers[num]);
+            // Dropzone effect
+            dropZones[0].classList.add("filled");
+        }
+        else if (dropZones[1].textContent == "") {
+            dropZones[1].textContent = num; 
+            // Disable all button
+            for (let i = 0; i < 10; i++) {
+                numberBtns[i].classList.add("dragged");
+                numberBtns[i]['draggable'] = false;
+                numberBtns[i].removeEventListener("click", numberBtnHandlers[i]);
+            }
+            // Dropzone effect
+            dropZones[1].classList.add("filled");
+        }
+
+    }
 }
