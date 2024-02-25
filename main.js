@@ -7,6 +7,7 @@ const startBtn = document.getElementById("start");
 const resumeBtn = document.getElementById("resume");
 const pauseBtn = document.getElementById("pause");
 const submitBtn = document.getElementById("submit");
+const clearBtn = document.getElementById("clear");
 
 // Get the level buttons
 const levelBtns = [];
@@ -66,6 +67,8 @@ function updateTimerDisplay() {
     remainTime.textContent = seconds;
 }
 
+
+// Handling pause button
 function pauseGame() {
     clearInterval(timer);
     timer = null;
@@ -82,6 +85,7 @@ pauseBtn.onclick = (event) => {
     homeDiv.style.display = "inline";
 };
 
+// Handling resume button
 resumeBtn.onclick = (event) => {
     if (!timer) {
         timer = setInterval(() => {
@@ -124,5 +128,21 @@ function clickNumber(num) {
             dropZones[1].classList.add("filled");
         }
 
+    }
+}
+
+
+// Handling clear button
+clearBtn.onclick = (event) => {
+    // Clear drop zones text and effect
+    dropZones.forEach(zone => {
+        zone.textContent = "";
+        zone.classList.remove("filled");
+    })
+    // Recover all number buttons
+    for (let i = 0; i < 10; i++) {
+        numberBtns[i].classList.remove("dragged");
+        numberBtns[i]['draggable'] = true;
+        numberBtns[i].addEventListener("click", numberBtnHandlers[i]);
     }
 }
