@@ -19,15 +19,22 @@ for (let i = 1; i < 4; i++) {
 const dropZones = [];
 for (let i = 1; i < 4; i++) {
     dropZones.push(document.getElementById(`drop-zone-${i}`));
+    dropZones[i-1].addEventListener("dragenter", dragEnter);
+    dropZones[i-1].addEventListener("dragover", dragOver);
+    dropZones[i-1].addEventListener("dragleave", dragLeave);
+    dropZones[i-1].addEventListener("drop", drop);
 }
 
 // Get the number buttons
 const numberBtns = [];
-const numberBtnHandlers = [];
+const numberBtnClickHandlers = [];
+const numberBtnDragHandlers = [];
 for (let i = 0; i < 10; i++) {
     numberBtns.push(document.getElementById(`number-${i}`));
-    numberBtnHandlers.push(() => clickNumber(i));
-    numberBtns[i].addEventListener("click", numberBtnHandlers[i]);
+    numberBtnClickHandlers.push(() => clickNumber(i));
+    numberBtns[i].addEventListener("click", numberBtnClickHandlers[i]);
+    numberBtnDragHandlers.push((event) => dragNumber(event, i));
+    numberBtns[i].addEventListener("dragstart", numberBtnDragHandlers[i]);
 }
 
 
@@ -78,7 +85,6 @@ function pauseGame() {
 
 
 pauseBtn.onclick = (event) => {
-    console.log("clicked");
     clearInterval(timer);
     timer = null;
     gameDiv.style.display = "none";
@@ -105,29 +111,101 @@ resumeBtn.onclick = (event) => {
 
 // Handle number clicking events
 function clickNumber(num) {
-    console.log(`Clicked ${num}`);
-    if (level === 1) {
-        if (dropZones[0].textContent == "") { 
+    if (level !== 3) {
+        // If level is 1 and 2, only two dropzones will be shown on the page
+        if (dropZones[0].textContent === "" && dropZones[1].textContent === "") { 
+            // If all dropzones are empty, fill the first dropzone
             dropZones[0].textContent = num;
             // Disable button
             numberBtns[num].classList.add("dragged");
             numberBtns[num]['draggable'] = false;
-            numberBtns[num].removeEventListener("click", numberBtnHandlers[num]);
+            numberBtns[num].removeEventListener("click", numberBtnClickHandlers[num]);
+            numberBtns[num].removeEventListener("dragstart", numberBtnDragHandlers[num]);
             // Dropzone effect
             dropZones[0].classList.add("filled");
-        }
-        else if (dropZones[1].textContent == "") {
+        } else if (dropZones[0].textContent !== "" && dropZones[1].textContent === "") {
+            // If the first dropzone is filled, fill the second dropzone
             dropZones[1].textContent = num; 
             // Disable all button
             for (let i = 0; i < 10; i++) {
                 numberBtns[i].classList.add("dragged");
                 numberBtns[i]['draggable'] = false;
-                numberBtns[i].removeEventListener("click", numberBtnHandlers[i]);
+                numberBtns[i].removeEventListener("click", numberBtnClickHandlers[i]);
+                numberBtns[i].removeEventListener("dragstart", numberBtnDragHandlers[i]);
             }
             // Dropzone effect
             dropZones[1].classList.add("filled");
+        } else if (dropZones[0].textContent === "" && dropZones[1].textContent !== "") {
+            // If the first dropzone is empty and the second dropzone is filled, fill the first dropzone
+            dropZones[0].textContent = num;
+            // Disable all button
+            for (let i = 0; i < 10; i++) {
+                numberBtns[i].classList.add("dragged");
+                numberBtns[i]['draggable'] = false;
+                numberBtns[i].removeEventListener("click", numberBtnClickHandlers[i]);
+                numberBtns[i].removeEventListener("dragstart", numberBtnDragHandlers[i]);
+            }
+            // Dropzone effect
+            dropZones[0].classList.add("filled");
         }
 
+    } else {
+        // If level is 3, all three dropzones will be shown on the page
+    }
+}
+
+
+// Handle number dragging events
+function dragNumber(event, num) {
+    event.dataTransfer.setData("number", num);
+}
+
+
+/********** Handling drop zones dropping events **********/
+function dragEnter(event) {
+    event.target.classList.add("drop-hover");
+}
+
+function dragOver(event) {
+    // Make the area droppable, as default the area is not droppable
+    event.preventDefault();
+}
+
+function dragLeave(event) {
+    event.target.classList.remove("drop-hover");
+}
+
+function drop(event) {
+    // Prevent open the file link
+    event.preventDefault();
+    // Dropzone effect
+    let num = event.dataTransfer.getData("number");
+    event.target.textContent = num;
+    event.target.classList.add("filled");
+    event.target.classList.remove("drop-hover");
+    // Disable dropping effects
+    event.target.removeEventListener("dragenter", dragEnter);
+    event.target.removeEventListener("dragover", dragOver);
+    event.target.removeEventListener("dragleave", dragLeave);
+    event.target.removeEventListener("drop", drop);
+    // Disable number buttons
+    if (level !== 3) {
+        if (dropZones.slice(0,2).every(zone => zone.classList.contains("filled"))) {
+            // If all drop zones are filled, disable all button
+            for (let i = 0; i < 10; i++) {
+                numberBtns[i].classList.add("dragged");
+                numberBtns[i]['draggable'] = false;
+                numberBtns[i].removeEventListener("click", numberBtnClickHandlers[i]);
+                numberBtns[i].removeEventListener("dragstart", numberBtnDragHandlers[i]);
+            }
+        } else {
+            // Only disable the dragged number
+            let draggedNumberBtn = numberBtns[num];
+            draggedNumberBtn.classList.add("dragged");
+            draggedNumberBtn['draggable'] = false;
+            draggedNumberBtn.removeEventListener("click", numberBtnClickHandlers[num]);
+            draggedNumberBtn.removeEventListener("dragstart", numberBtnDragHandlers[num]);
+        }
     }
 }
 
@@ -138,11 +216,18 @@ clearBtn.onclick = (event) => {
     dropZones.forEach(zone => {
         zone.textContent = "";
         zone.classList.remove("filled");
+        // Recover the dropping effects
+        zone.addEventListener("dragenter", dragEnter);
+        zone.addEventListener("dragover", dragOver);
+        zone.addEventListener("dragleave", dragLeave);
+        zone.addEventListener("drop", drop);
+
     })
     // Recover all number buttons
     for (let i = 0; i < 10; i++) {
         numberBtns[i].classList.remove("dragged");
         numberBtns[i]['draggable'] = true;
-        numberBtns[i].addEventListener("click", numberBtnHandlers[i]);
+        numberBtns[i].addEventListener("click", numberBtnClickHandlers[i]);
+        numberBtns[i].addEventListener("dragstart", numberBtnDragHandlers[i]);
     }
 }
