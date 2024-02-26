@@ -9,6 +9,11 @@ const pauseBtn = document.getElementById("pause");
 const submitBtn = document.getElementById("submit");
 const clearBtn = document.getElementById("clear");
 
+// Get the equations elements
+const operator1 = document.getElementById("operator-1");
+const operator2 = document.getElementById("operator-2");
+const answerDisplay = document.getElementById("answer");
+
 // Get the level buttons
 const levelBtns = [];
 for (let i = 1; i < 4; i++) {
@@ -231,3 +236,41 @@ clearBtn.onclick = (event) => {
         numberBtns[i].addEventListener("dragstart", numberBtnDragHandlers[i]);
     }
 }
+
+/********** Handling Equations Generation **********/
+function generateEquation() {
+    const operators = ['+', '-'];
+    const operator = operators[Math.floor(Math.random() * operators.length)];
+    
+    let a, b, c;
+    do {
+        a = Math.floor(Math.random() * 10);
+        b = Math.floor(Math.random() * 10);
+        c = Math.floor(Math.random() * 9) + 1; // Ensure c is not 0
+    } while (a === b || b === c || a === c);
+
+    answerDisplay.textContent = c;
+    operator1.textContent = operator;
+}
+generateEquation();
+
+function checkEquation(a, b, c) {
+    if (level !== 3) {
+        const operator = operator1.textContent;
+        const ans = parseInt(answerDisplay.textContent);
+        return eval(`${a} ${operator} ${b}`) === ans;
+    }
+}
+
+submitBtn.addEventListener("click", (event) => {
+    event.preventDefault();
+    if (dropZones[0].textContent !== "" && dropZones[1].textContent !== "") {
+        if (checkEquation(parseInt(dropZones[0].textContent), parseInt(dropZones[1].textContent), parseInt(dropZones[2].textContent))) {
+            // If the equation is correct
+            console.log("Correct");
+            generateEquation();
+        } else {
+            console.log("Incorrect");
+        }
+    }
+})
