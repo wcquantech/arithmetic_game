@@ -173,7 +173,7 @@ nav {
     width: 100%;
     display: none;
 }
-.score-display {
+#score-display {
     display: none;
 }
 #resume {

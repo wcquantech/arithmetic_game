@@ -142,6 +142,8 @@ startBtn.onclick = (event) => {
     resumeBtn.style.display = "inline";
     // Reset live score
     liveScoreDisplay.textContent = 0;
+    // Reset equation
+    generateEquation();
     // Start count down
     if (!timer) {
         timer = setInterval(() => {
@@ -152,8 +154,8 @@ startBtn.onclick = (event) => {
                 // Disable resume button
                 resumeBtn.style.display = "none";
                 // Show final score
+                scoreDisplayDiv.style.display = "inline";
                 finalScore.textContent = liveScoreDisplay.textContent;
-                scoreDisplayDiv.style.display = "block";
                 // Save the high score if the user breaks record
                 if (+finalScore.textContent > +prevScoreDisplay.textContent) {
                     localStorage.setItem(`prev_score_${level}`, +finalScore.textContent);
@@ -370,19 +372,28 @@ function generateEquation() {
 }
 generateEquation();
 
-function checkAnswer(a, b, c) {
+// Function to check the answer and return the score
+// If the equation includes mutiplication and division, the reward score will be 2
+function checkScore(a, b, c) {
     if (level !== 3) {
         const operator = operator1.textContent;
         const ans = parseInt(answerDisplay.textContent);
-        return eval(`${a} ${operator} ${b}`) === ans;
+        if (operator === "+" || operator === "-") {
+            return eval(`${a} ${operator} ${b}`) === ans;
+        } else {
+            return (eval(`${a} ${operator} ${b}`) === ans)*2;
+        }
     }
 }
+
+let tempScore;
 
 // Handle submission
 function submit() {
     if (level !== 3) {
         if (dropZones[0].textContent !== "" && dropZones[1].textContent !== "") {
-            if (checkAnswer(parseInt(dropZones[0].textContent), parseInt(dropZones[1].textContent))) {
+            tempScore = checkScore(parseInt(dropZones[0].textContent), parseInt(dropZones[1].textContent));
+            if (tempScore > 0) {
                 // If the equation is correct
                 console.log("Correct");
                 // Add temporary style for correct answer
@@ -406,6 +417,8 @@ function submit() {
                     dropZones[i].addEventListener("dragleave", dragLeave);
                     dropZones[i].addEventListener("drop", drop);
                 }
+                // Add score
+                liveScoreDisplay.textContent = +liveScoreDisplay.textContent + tempScore;
                 // Generate new equation
                 generateEquation();
             } else {
