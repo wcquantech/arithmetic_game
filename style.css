@@ -104,6 +104,9 @@ nav {
 .drop-zone.drop-hover {
     transform: scale(1.1);
 }
+#answer {
+    transition: background 0.2s;
+}
 .filled {
     background: #2dbdd6;
     color: #fff;
@@ -112,8 +115,16 @@ nav {
     line-height: 60px;
     border-radius: 10%;
 }
-.wrong {
-    background: #d62d2d;
+.temp-correct {
+    background: #30d62d;
+    color: #fff;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    border-radius: 10%;
+}
+.temp-wrong {
+    background: #d84848;
     color: #fff;
     width: 60px;
     height: 60px;

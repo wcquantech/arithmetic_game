@@ -361,7 +361,11 @@ function submit() {
             if (checkAnswer(parseInt(dropZones[0].textContent), parseInt(dropZones[1].textContent))) {
                 // If the equation is correct
                 console.log("Correct");
-                generateEquation();
+                // Add temporary style for correct answer
+                answerDisplay.classList.add("temp-correct");
+                setTimeout(() => {
+                    answerDisplay.classList.remove("temp-correct");
+                }, 1000);
                 // Recover all number buttons
                 for (let i = 0; i < 10; i++) {
                     numberBtns[i].classList.remove("dragged");
@@ -378,8 +382,15 @@ function submit() {
                     dropZones[i].addEventListener("dragleave", dragLeave);
                     dropZones[i].addEventListener("drop", drop);
                 }
+                // Generate new equation
+                generateEquation();
             } else {
                 console.log("Incorrect");
+                // Add temporary style for incorrect answer
+                answerDisplay.classList.add("temp-wrong");
+                setTimeout(() => {
+                    answerDisplay.classList.remove("temp-wrong");
+                }, 1000);
             }
         }
     }
