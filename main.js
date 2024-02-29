@@ -42,7 +42,80 @@ for (let i = 0; i < 10; i++) {
     numberBtns[i].addEventListener("dragstart", numberBtnDragHandlers[i]);
 }
 
+// Handle keyboard typing events
+document.addEventListener('keydown', function(event) {
+    if (event.key >= 0 && event.key <= 9) {
+        // Number keys
+        // Convert the key to a number
+        const num = parseInt(event.key);
 
+        // Check if the number is already in any of the drop zones
+        const isNumberInDropZone = dropZones.some(zone => zone.textContent === event.key);
+
+        // If the number is not in any drop zone, trigger the clickNumber function
+        if (!isNumberInDropZone) {
+            clickNumber(num);
+        }
+    } else if (event.key === "Enter") {
+        // Enter key
+        submit();
+    } else if (event.key === "Escape") {
+        // Escape key
+        clear();
+    } else if (event.key === "Backspace") {
+        if (level !== 3) {
+            if (dropZones[0].textContent !== "" && dropZones[1].textContent === "") {
+                let num = +dropZones[0].textContent;
+                // Recover the corresponding number button
+                numberBtns[num].classList.remove("dragged");
+                numberBtns[num]['draggable'] = true;
+                numberBtns[num].addEventListener("click", numberBtnClickHandlers[num]);
+                numberBtns[num].addEventListener("dragstart", numberBtnDragHandlers[num]);
+                // Recover the first dropzone
+                dropZones[0].textContent = "";
+                dropZones[0].classList.remove("filled");
+                dropZones[0].addEventListener("dragenter", dragEnter);
+                dropZones[0].addEventListener("dragover", dragOver);
+                dropZones[0].addEventListener("dragleave", dragLeave);
+                dropZones[0].addEventListener("drop", drop);
+            } else if (dropZones[0].textContent !== "" && dropZones[1].textContent !== "") {
+                let num = +dropZones[0].textContent;
+                // Recover all number buttons but num
+                for (let i = 0; i < 10; i++) {
+                    if (i !== num) {
+                        numberBtns[i].classList.remove("dragged");
+                        numberBtns[i]['draggable'] = true;
+                        numberBtns[i].addEventListener("click", numberBtnClickHandlers[i]);
+                        numberBtns[i].addEventListener("dragstart", numberBtnDragHandlers[i]);
+                    }
+                }
+                // Recover the second dropzone
+                dropZones[1].textContent = "";
+                dropZones[1].classList.remove("filled");
+                dropZones[1].addEventListener("dragenter", dragEnter);
+                dropZones[1].addEventListener("dragover", dragOver);
+                dropZones[1].addEventListener("dragleave", dragLeave);
+                dropZones[1].addEventListener("drop", drop);
+            } else if (dropZones[0].textContent === "" && dropZones[1].textContent !== "") {
+                // Recover the corresponding number button
+                let num = +dropZones[1].textContent;
+                numberBtns[num].classList.remove("dragged");
+                numberBtns[num]['draggable'] = true;
+                numberBtns[num].addEventListener("click", numberBtnClickHandlers[num]);
+                numberBtns[num].addEventListener("dragstart", numberBtnDragHandlers[num]);
+                // Recover the second dropzone
+                dropZones[1].textContent = "";
+                dropZones[1].classList.remove("filled");
+                dropZones[1].addEventListener("dragenter", dragEnter);
+                dropZones[1].addEventListener("dragover", dragOver);
+                dropZones[1].addEventListener("dragleave", dragLeave);
+                dropZones[1].addEventListener("drop", drop);
+            }
+        } else {
+
+        }
+    }
+});
 
 // Setup timer and level
 let timer;
@@ -215,8 +288,8 @@ function drop(event) {
 }
 
 
-// Handling clear button
-clearBtn.onclick = (event) => {
+// Handle clearance
+function clear() {
     // Clear drop zones text and effect
     dropZones.forEach(zone => {
         zone.textContent = "";
@@ -235,6 +308,11 @@ clearBtn.onclick = (event) => {
         numberBtns[i].addEventListener("click", numberBtnClickHandlers[i]);
         numberBtns[i].addEventListener("dragstart", numberBtnDragHandlers[i]);
     }
+}
+
+// Handling clear button
+clearBtn.onclick = (event) => {
+    clear();
 }
 
 /********** Handling Equations Generation **********/
@@ -276,8 +354,8 @@ function checkAnswer(a, b, c) {
     }
 }
 
-submitBtn.addEventListener("click", (event) => {
-    event.preventDefault();
+// Handle submission
+function submit() {
     if (level !== 3) {
         if (dropZones[0].textContent !== "" && dropZones[1].textContent !== "") {
             if (checkAnswer(parseInt(dropZones[0].textContent), parseInt(dropZones[1].textContent))) {
@@ -305,5 +383,10 @@ submitBtn.addEventListener("click", (event) => {
             }
         }
     }
+}
 
+// Handle submit button click event
+submitBtn.addEventListener("click", (event) => {
+    event.preventDefault();
+    submit();
 })
