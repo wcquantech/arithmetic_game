@@ -9,6 +9,10 @@ const pauseBtn = document.getElementById("pause");
 const submitBtn = document.getElementById("submit");
 const clearBtn = document.getElementById("clear");
 
+// Get the scoreboard elements
+const liveScoreDisplay = document.getElementById("live-score");
+const prevScoreDisplay = document.getElementById("previous-score");
+
 // Get the equations elements
 const operator1 = document.getElementById("operator-1");
 const operator2 = document.getElementById("operator-2");
@@ -117,14 +121,18 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
-// Setup timer and level
+// Setup timer
 let timer;
 let seconds = 10;
 const remainTime = document.getElementById("time");
 remainTime.textContent = seconds;
 
-let level = 1;  // default
+// Setup level
+let level = +localStorage.getItem("prev_level") || 1;
+levelBtns[level-1].classList.add("active-level");
 
+// Setup the previous high score, based on level
+prevScoreDisplay.textContent = +localStorage.getItem(`prev_score_${level}`) || 0;
 
 // Start the game
 startBtn.onclick = (event) => {
@@ -132,6 +140,8 @@ startBtn.onclick = (event) => {
     seconds = 10;
     // Able resume button
     resumeBtn.style.display = "inline";
+    // Reset live score
+    liveScoreDisplay.textContent = 0;
     // Start count down
     if (!timer) {
         timer = setInterval(() => {
@@ -141,6 +151,13 @@ startBtn.onclick = (event) => {
                 pauseGame();
                 // Disable resume button
                 resumeBtn.style.display = "none";
+                // Show final score
+                finalScore.textContent = liveScoreDisplay.textContent;
+                scoreDisplayDiv.style.display = "block";
+                // Save the high score if the user breaks record
+                if (+finalScore.textContent > +prevScoreDisplay.textContent) {
+                    localStorage.setItem(`prev_score_${level}`, +finalScore.textContent);
+                }
             }
         }, 1000);
     }
@@ -179,6 +196,13 @@ resumeBtn.onclick = (event) => {
                 pauseGame();
                 // Disable resume button
                 resumeBtn.style.display = "none";
+                // Show final score
+                finalScore.textContent = liveScoreDisplay.textContent;
+                scoreDisplayDiv.style.display = "block";
+                // Save the high score if the user breaks record
+                if (+finalScore.textContent > +prevScoreDisplay.textContent) {
+                    localStorage.setItem(`prev_score_${level}`, +finalScore.textContent);
+                }
             }
         }, 1000);
     }
