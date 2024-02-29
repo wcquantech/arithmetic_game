@@ -239,22 +239,36 @@ clearBtn.onclick = (event) => {
 
 /********** Handling Equations Generation **********/
 function generateEquation() {
-    const operators = ['+', '-'];
-    const operator = operators[Math.floor(Math.random() * operators.length)];
-    
-    let a, b, c;
-    do {
-        a = Math.floor(Math.random() * 10);
-        b = Math.floor(Math.random() * 10);
-        c = Math.floor(Math.random() * 9) + 1; // Ensure c is not 0
-    } while (a === b || b === c || a === c);
+    const operators = ["+", "-", "x", "÷"];
+    let operator;
 
-    answerDisplay.textContent = c;
-    operator1.textContent = operator;
+    if (level === 1) {
+        // Only one operator needed
+        // no multiplication and division
+        operator = operators[Math.floor(Math.random() * 2)];  // The output will only be 0 or 1
+        operator1.textContent = operator;
+
+        // Generate equation
+        let ans;
+        if (operator === "+") {
+            // Maximum answer should be 9+8=17
+            ans = Math.ceil(Math.random() * 17);
+            answerDisplay.textContent = ans.toString();
+        } else if (operator === "-") {
+            // Maximum answer should be 9-0=9
+            ans = Math.ceil(Math.random() * 9);
+            answerDisplay.textContent = ans.toString();
+        }
+        
+    } else if (level === 2) {
+        // Only one operator needed
+    } else if (level === 3) {
+
+    }
 }
 generateEquation();
 
-function checkEquation(a, b, c) {
+function checkAnswer(a, b, c) {
     if (level !== 3) {
         const operator = operator1.textContent;
         const ans = parseInt(answerDisplay.textContent);
@@ -264,13 +278,32 @@ function checkEquation(a, b, c) {
 
 submitBtn.addEventListener("click", (event) => {
     event.preventDefault();
-    if (dropZones[0].textContent !== "" && dropZones[1].textContent !== "") {
-        if (checkEquation(parseInt(dropZones[0].textContent), parseInt(dropZones[1].textContent), parseInt(dropZones[2].textContent))) {
-            // If the equation is correct
-            console.log("Correct");
-            generateEquation();
-        } else {
-            console.log("Incorrect");
+    if (level !== 3) {
+        if (dropZones[0].textContent !== "" && dropZones[1].textContent !== "") {
+            if (checkAnswer(parseInt(dropZones[0].textContent), parseInt(dropZones[1].textContent))) {
+                // If the equation is correct
+                console.log("Correct");
+                generateEquation();
+                // Recover all number buttons
+                for (let i = 0; i < 10; i++) {
+                    numberBtns[i].classList.remove("dragged");
+                    numberBtns[i]['draggable'] = true;
+                    numberBtns[i].addEventListener("click", numberBtnClickHandlers[i]);
+                    numberBtns[i].addEventListener("dragstart", numberBtnDragHandlers[i]);
+                }
+                // Recover all dropzones
+                for (let i = 0; i < 2; i++) {
+                    dropZones[i].textContent = "";
+                    dropZones[i].classList.remove("filled");
+                    dropZones[i].addEventListener("dragenter", dragEnter);
+                    dropZones[i].addEventListener("dragover", dragOver);
+                    dropZones[i].addEventListener("dragleave", dragLeave);
+                    dropZones[i].addEventListener("drop", drop);
+                }
+            } else {
+                console.log("Incorrect");
+            }
         }
     }
+
 })
