@@ -128,7 +128,10 @@ const remainTime = document.getElementById("time");
 remainTime.textContent = seconds;
 
 // Setup level
-let level = +localStorage.getItem("prev_level") || 1;
+if (!localStorage.getItem("prev_level")) {
+    localStorage.setItem("prev_level", 1);
+}
+let level = +localStorage.getItem("prev_level");
 levelBtns[level-1].classList.add("active-level");
 
 // Setup the previous high score, based on level
@@ -342,9 +345,22 @@ clearBtn.onclick = (event) => {
 }
 
 /********** Handling Equations Generation **********/
+
+// Helper function that returns a random element from an array
+function getRandomElement(arr) {
+    if (arr && arr.length) {
+      const randomIndex = Math.floor(Math.random() * arr.length);
+      return arr[randomIndex];
+    }
+    return;
+}
+
 function generateEquation() {
     const operators = ["+", "-", "x", "÷"];
     let operator;
+    let ans;
+    let a;
+    let b;
 
     if (level === 1) {
         // Only one operator needed
@@ -353,7 +369,6 @@ function generateEquation() {
         operator1.textContent = operator;
 
         // Generate equation
-        let ans;
         if (operator === "+") {
             // Maximum answer should be 9+8=17
             ans = Math.ceil(Math.random() * 17);
@@ -366,6 +381,48 @@ function generateEquation() {
         
     } else if (level === 2) {
         // Only one operator needed
+        // including multiplication and division
+        operator = operators[Math.floor(Math.random() * 4)];  // The output will be 0, 1, 2, or 3
+        operator1.textContent = operator;
+
+        // Generate equation
+        if (operator === "+") {
+            // Maximum answer should be 9+8=17
+            ans = Math.ceil(Math.random() * 17);
+            answerDisplay.textContent = ans.toString();
+        } else if (operator === "-") {
+            // Maximum answer should be 9-0=9
+            ans = Math.ceil(Math.random() * 9);
+            answerDisplay.textContent = ans.toString();
+        } else if (operator === "x") {
+            // Create the operands first
+            a = Math.floor(Math.random() * 10);  // a will be in range 0-9
+            b = Math.floor(Math.random() * 10);  // b will also be in range 0-9
+            while (a === b) {
+                // If a and b are the same, generate a new b
+                b = Math.floor(Math.random() * 10);
+            }
+            ans = a * b;
+            answerDisplay.textContent = ans.toString();
+        } else if (operator === "÷") {
+            // Create the operands first
+            // Only division with no remainder
+            a = Math.floor(Math.random() * 10);  // a will be in range 0-9
+            if (a === 0) {
+                ans = 0;
+            } else if ([2, 3, 4, 5, 7].includes(a)) {
+                ans = a;
+            } else if (a === 6) {
+                ans = getRandomElement([2, 3, 6]);
+            } else if (a === 8) {
+                ans = getRandomElement([2, 4, 8]);
+            } else if (a === 9) {
+                ans = getRandomElement([3, 6, 9]);
+            } else if (a === 1) {
+                ans = 0;
+            }
+            answerDisplay.textContent = ans.toString();
+        }
     } else if (level === 3) {
 
     }
@@ -381,7 +438,8 @@ function checkScore(a, b, c) {
         if (operator === "+" || operator === "-") {
             return eval(`${a} ${operator} ${b}`) === ans;
         } else {
-            return (eval(`${a} ${operator} ${b}`) === ans)*2;
+            if (operator === "x") return (eval(`${a} * ${b}`) === ans)*2;
+            else if (operator === "÷") return (eval(`${a} / ${b}`) === ans)*2;
         }
     }
 }
