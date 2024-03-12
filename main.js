@@ -187,7 +187,7 @@ startBtn.onclick = (event) => {
         }, 1000);
     }
     homeDiv.style.display = "none";
-    gameDiv.style.display = "inline";
+    gameDiv.style.display = "flex";
 }
 
 function updateTimerDisplay() {

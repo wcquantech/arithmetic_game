@@ -2,18 +2,22 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    background: rgb(242, 242, 242);
+    /* background: rgb(255, 255, 255); */
+    background: transparent;
     color: #585858
 }
 body {
     font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     text-align: center;
     display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
+    background: #fff;
 }
 nav {
     width: 100%;
-    position: fixed;
+    position: sticky;
     top: 0;
     z-index: 10;
     display: flex;
@@ -48,8 +52,11 @@ nav {
     cursor: default;
 }
 #game {
-    margin-top: 200px;
-    flex-basis: 50%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     /* display: none; */
 }
 .equation {
@@ -61,18 +68,17 @@ nav {
     justify-content: space-evenly;
 }
 #numbers {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+
 }
 .number {
-    font-size: 18px;
+    font-size: xx-large;
     display: inline-block;
     width: 60px;
     height: 60px;
     line-height: 60px;
-    border: 1px solid #585858;
+    background: #d0d0d0;
     border-radius: 10%;
     margin: 10px;
     cursor: move;
@@ -96,7 +102,7 @@ nav {
     width: 60px;
     height: 60px;
     line-height: 30px;
-    border: 1px dashed #000;
+    border: 1px solid #d0d0d0;
     border-radius: 10%;
     margin: 5px;
     transition: all 0.4s;
@@ -113,6 +119,7 @@ nav {
     width: 60px;
     height: 60px;
     line-height: 60px;
+    border: none;
     border-radius: 10%;
 }
 .temp-correct {
@@ -168,10 +175,14 @@ nav {
     margin: 0 20px;
     font-size: medium;
 }
+.scoreboard span {
+    font-weight: bold;
+}
 #home {
-    margin-top: 300px;
     width: 100%;
+    padding-top: 20%;
     display: none;
+    flex: 1;
 }
 #score-display {
     display: none;
@@ -179,3 +190,45 @@ nav {
 #resume {
     display: none;
 }
+
+@media (max-width: 640px) {
+    body {
+        height: 100vh;
+    }
+    .description {
+        display: none;
+    }
+    #game {
+        justify-content: space-around;
+    }
+    #numbers {
+        width: 90%;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        padding-left: 20px;
+        padding-right: 20px;
+        justify-items: center;
+        align-items: center;
+    }
+    #number-0 {
+        grid-column-start: 2;
+    }
+    .number {
+        border-radius: 50%;
+        width: 80px;
+        height: 80px;
+        line-height: 80px;
+    }
+    .equation {
+        justify-content: space-between;
+    }
+    .asso {
+        display: flex;
+        width: 100%;
+        justify-content: space-around;
+    }
+    .asso button {
+        width: 100px;
+    }
+}
+
