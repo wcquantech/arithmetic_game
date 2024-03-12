@@ -130,7 +130,7 @@ document.addEventListener('keydown', function(event) {
 
 // Setup timer
 let timer;
-let seconds = 10;
+let seconds = 30;
 const remainTime = document.getElementById("time");
 remainTime.textContent = seconds;
 
@@ -158,7 +158,7 @@ startBtn.onclick = (event) => {
         dropZones[2].style.display = "none";
     }
     // Reset timer
-    seconds = 10;
+    seconds = 30;
     // Able resume button
     resumeBtn.style.display = "inline";
     // Reset live score
