@@ -22,6 +22,16 @@ const answerDisplay = document.getElementById("answer");
 const levelBtns = [];
 for (let i = 1; i < 4; i++) {
     levelBtns.push(document.getElementById(`level-${i}`));
+    levelBtns[i-1].onclick = (event) => {
+        levelBtns[level-1].classList.remove("active-level");
+        level = i;
+        levelBtns[level-1].classList.add("active-level");
+        localStorage.setItem("prev_level", level);
+        pauseGame();
+        resumeBtn.style.display = "none";
+        scoreDisplayDiv.style.display = "none";
+        clear();
+    }
 }
 
 // Get the drop zones
@@ -129,11 +139,6 @@ if (!localStorage.getItem("prev_level")) {
     localStorage.setItem("prev_level", 1);
 }
 let level = +localStorage.getItem("prev_level");
-if (level === 3) {
-    // if level 3, show the second operator and the third dropzone
-    operator2Display.style.display = "inline";
-    dropZones[2].style.display = "inline";
-}
 levelBtns[level-1].classList.add("active-level");
 
 // Setup the previous high score, based on level
@@ -141,12 +146,25 @@ prevScoreDisplay.textContent = +localStorage.getItem(`prev_score_${level}`) || 0
 
 // Start the game
 startBtn.onclick = (event) => {
+    // Clear the game
+    clear();
+    // If level 3, show the second operator and the third dropzone
+    if (level === 3) {
+        // if level 3, show the second operator and the third dropzone
+        operator2Display.style.display = "inline";
+        dropZones[2].style.display = "inline";
+    } else {
+        operator2Display.style.display = "none";
+        dropZones[2].style.display = "none";
+    }
     // Reset timer
     seconds = 10;
     // Able resume button
     resumeBtn.style.display = "inline";
     // Reset live score
     liveScoreDisplay.textContent = 0;
+    // Reset previous high score
+    prevScoreDisplay.textContent = +localStorage.getItem(`prev_score_${level}`) || 0;
     // Reset equation
     generateEquation();
     // Start count down
@@ -245,7 +263,7 @@ function clickNumber(num) {
 
     // If there is at least one empty dropzone, only disable the clicked number
     // otherwise, disable all number buttons
-    if (dropZones.some(zone => !zone.textContent)) {
+    if (dropZones.slice(0, lastIdx+1).some(zone => !zone.textContent)) {
         // Only disable single button
         numberBtns[num].classList.add("dragged");
         numberBtns[num]['draggable'] = false;
