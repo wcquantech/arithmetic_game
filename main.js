@@ -1,4 +1,4 @@
-// Get the required elements that involve logics
+/*********** Get all required HTML elements ***********/
 const gameDiv = document.getElementById("game");
 const homeDiv = document.getElementById("home");
 const scoreDisplayDiv = document.getElementById("score-display");
@@ -17,6 +17,18 @@ const prevScoreDisplay = document.getElementById("previous-score");
 const operator1Display = document.getElementById("operator-1");
 const operator2Display = document.getElementById("operator-2");
 const answerDisplay = document.getElementById("answer");
+
+// Setup game logic variables
+let level;
+// If user has not visited the page before
+if (!localStorage.getItem("prev_level")) {
+    localStorage.setItem("prev_level", 1);
+}
+level = +localStorage.getItem("prev_level");
+let timer;
+let seconds;
+let initialSeconds = 30;
+const remainTime = document.getElementById("time");
 
 // Get the level buttons
 const levelBtns = [];
@@ -56,93 +68,22 @@ for (let i = 0; i < 10; i++) {
     numberBtns[i].addEventListener("dragstart", numberBtnDragHandlers[i]);
 }
 
-// Handle keyboard typing events
-document.addEventListener('keydown', function(event) {
-    if (event.key >= 0 && event.key <= 9) {
-        // Number keys
-        // Convert the key to a number
-        const num = parseInt(event.key);
+/*********** Game logic ***********/
+// Initial setup
+function setUp(
+    levelBtns,
+    seconds,
+    initialSeconds, 
+    remainTime,
+    prevScoreDisplay
+  ) {
+    seconds = initialSeconds;
+    remainTime.textContent = seconds;
+    levelBtns[level-1].classList.add("active-level");
+    prevScoreDisplay.textContent = +localStorage.getItem(`prev_score_${level}`) || 0;
+  }
 
-        // Check if the number is already in any of the drop zones
-        const isNumberInDropZone = dropZones.some(zone => zone.textContent === event.key);
-
-        // If the number is not in any drop zone, trigger the clickNumber function
-        if (!isNumberInDropZone) {
-            clickNumber(num);
-        }
-    } else if (event.key === "Enter") {
-        // Enter key
-        submit();
-    } else if (event.key === "Escape") {
-        // Escape key
-        clear();
-    } else if (event.key === "Backspace") {
-        let removed = false;
-        let idx;
-        let num;
-        if (level !== 3) {
-            idx = 1;
-        } else {
-            idx = 2;
-        }
-
-        // Find the first filled dropzone, from right to left
-        while (!removed && idx >= 0) {
-            if (dropZones[idx].textContent) {
-                // recover the dropzone
-                num = +dropZones[idx].textContent;
-                dropZones[idx].textContent = "";
-                dropZones[idx].classList.remove("filled");
-                dropZones[idx].addEventListener("dragenter", dragEnter);
-                dropZones[idx].addEventListener("dragover", dragOver);
-                dropZones[idx].addEventListener("dragleave", dragLeave);
-                dropZones[idx].addEventListener("drop", drop);
-                removed = true;
-            }
-            idx -= 1;
-        }
-
-        // If all dropzones are empty, return
-        if (!removed && idx < 0) return;
-
-        // If there is at least one dropzone filled, recover all but the numbers in the dropzones
-        // otherwise, recover only the number removed
-        let nums = dropZones.map(zone => zone.textContent? +zone.textContent : null);
-        if (dropZones.some(zone => +zone.textContent)) {
-            // Recover all but the numbers in the dropzones
-            for (let i = 0; i < 10; i++) {
-                if (!nums.includes(i)) {
-                    numberBtns[i].classList.remove("dragged");
-                    numberBtns[i]['draggable'] = true;
-                    numberBtns[i].addEventListener("click", numberBtnClickHandlers[i]);
-                    numberBtns[i].addEventListener("dragstart", numberBtnDragHandlers[i]);
-                }
-            }
-        } else {
-            // Recover only the number removed
-            numberBtns[num].classList.remove("dragged");
-            numberBtns[num]['draggable'] = true;
-            numberBtns[num].addEventListener("click", numberBtnClickHandlers[num]);
-            numberBtns[num].addEventListener("dragstart", numberBtnDragHandlers[num]);
-        }
-    }
-});
-
-// Setup timer
-let timer;
-let seconds = 30;
-const remainTime = document.getElementById("time");
-remainTime.textContent = seconds;
-
-// Setup level
-if (!localStorage.getItem("prev_level")) {
-    localStorage.setItem("prev_level", 1);
-}
-let level = +localStorage.getItem("prev_level");
-levelBtns[level-1].classList.add("active-level");
-
-// Setup the previous high score, based on level
-prevScoreDisplay.textContent = +localStorage.getItem(`prev_score_${level}`) || 0;
+setUp(levelBtns, seconds, initialSeconds, remainTime, prevScoreDisplay);
 
 // Start the game
 startBtn.onclick = (event) => {
@@ -287,7 +228,6 @@ function dragNumber(event, num) {
 }
 
 
-/********** Handling drop zones dropping events **********/
 function dragEnter(event) {
     event.target.classList.add("drop-hover");
 }
@@ -367,17 +307,81 @@ clearBtn.onclick = (event) => {
     clear();
 }
 
-/********** Handling Equations Generation **********/
+// Handle keyboard typing events
+document.addEventListener('keydown', function(event) {
+    if (event.key >= 0 && event.key <= 9) {
+        // Number keys
+        // Convert the key to a number
+        const num = parseInt(event.key);
 
-// Helper function that returns a random element from an array
-function getRandomElement(arr) {
-    if (arr && arr.length) {
-      const randomIndex = Math.floor(Math.random() * arr.length);
-      return arr[randomIndex];
+        // Check if the number is already in any of the drop zones
+        const isNumberInDropZone = dropZones.some(zone => zone.textContent === event.key);
+
+        // If the number is not in any drop zone, trigger the clickNumber function
+        if (!isNumberInDropZone) {
+            clickNumber(num);
+        }
+    } else if (event.key === "Enter") {
+        // Enter key
+        submit();
+    } else if (event.key === "Escape") {
+        // Escape key
+        clear();
+    } else if (event.key === "Backspace") {
+        let removed = false;
+        let idx;
+        let num;
+        if (level !== 3) {
+            idx = 1;
+        } else {
+            idx = 2;
+        }
+
+        // Find the first filled dropzone, from right to left
+        while (!removed && idx >= 0) {
+            if (dropZones[idx].textContent) {
+                // recover the dropzone
+                num = +dropZones[idx].textContent;
+                dropZones[idx].textContent = "";
+                dropZones[idx].classList.remove("filled");
+                dropZones[idx].addEventListener("dragenter", dragEnter);
+                dropZones[idx].addEventListener("dragover", dragOver);
+                dropZones[idx].addEventListener("dragleave", dragLeave);
+                dropZones[idx].addEventListener("drop", drop);
+                removed = true;
+            }
+            idx -= 1;
+        }
+
+        // If all dropzones are empty, return
+        if (!removed && idx < 0) return;
+
+        // If there is at least one dropzone filled, recover all but the numbers in the dropzones
+        // otherwise, recover only the number removed
+        let nums = dropZones.map(zone => zone.textContent? +zone.textContent : null);
+        if (dropZones.some(zone => +zone.textContent)) {
+            // Recover all but the numbers in the dropzones
+            for (let i = 0; i < 10; i++) {
+                if (!nums.includes(i)) {
+                    numberBtns[i].classList.remove("dragged");
+                    numberBtns[i]['draggable'] = true;
+                    numberBtns[i].addEventListener("click", numberBtnClickHandlers[i]);
+                    numberBtns[i].addEventListener("dragstart", numberBtnDragHandlers[i]);
+                }
+            }
+        } else {
+            // Recover only the number removed
+            numberBtns[num].classList.remove("dragged");
+            numberBtns[num]['draggable'] = true;
+            numberBtns[num].addEventListener("click", numberBtnClickHandlers[num]);
+            numberBtns[num].addEventListener("dragstart", numberBtnDragHandlers[num]);
+        }
     }
-    return;
-}
+});
 
+
+
+/********** Handling Equations Generation **********/
 function generateEquation() {
     const operators = ["+", "-", "x", "÷"];
     let operator1, operator2, ans, a, b, c;
@@ -563,6 +567,7 @@ function generateEquation() {
 }
 generateEquation();
 
+/********** Handling Scores and Submission **********/
 // Function to check the answer and return the score
 // If the equation includes mutiplication and division, the reward score will be 2
 function checkScore(a, b, c) {
@@ -654,3 +659,13 @@ submitBtn.addEventListener("click", (event) => {
     event.preventDefault();
     submit();
 })
+
+/*********** Helper functions ***********/
+// Helper function that returns a random element from an array
+function getRandomElement(arr) {
+    if (arr && arr.length) {
+      const randomIndex = Math.floor(Math.random() * arr.length);
+      return arr[randomIndex];
+    }
+    return;
+  }
